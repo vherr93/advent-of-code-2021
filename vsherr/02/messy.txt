@@ -1,0 +1,83 @@
+package main
+
+import (
+	"bufio"
+	"fmt"
+	"os"
+)
+
+func main() {
+
+	words, err := scanWords("./input.txt")
+	if err != nil {
+		panic(err)
+	}
+
+	for _, word := range words {
+		fmt.Println(word)
+	}
+}
+
+func scanWords(path string) ([]string, error) {
+
+	file, err := os.Open(path)
+	if err != nil {
+		return nil, err
+	}
+
+	defer file.Close()
+
+	scanner := bufio.NewScanner(file)
+
+	scanner.Split(bufio.ScanWords)
+
+	var words []string
+
+	for scanner.Scan() {
+		words = append(words, scanner.Text())
+	}
+
+	return words, nil
+}
+
+// topMap := make(map[int]map[string]int)
+
+// innerMap := map[string]int {
+// 	"up": 4,
+// }
+
+// topMap[1] = innerMap
+
+// for key, val := range topMap {
+// 	fmt.Println("top key:", key, "top val:", val)
+// 	for x, y := range val {
+// 		fmt.Println("inner key:", x, "inner val:", y)
+// 	}
+// }
+
+// type key struct {
+// 	direction string
+// 	val int
+// }
+
+// topMap := make(map[int]map[string]int)
+
+// for _, v := range something {
+// innerMap := map[string]int{
+// 	"up": 4,
+// }
+
+// topMap[1] = innerMap
+
+// for key, val := range topMap {
+// 	fmt.Println("top key:", key, "top val:", val)
+// 	for x, y := range val {
+// 		fmt.Println("inner key:", x, "inner val:", y)
+// 	}
+// }
+
+// m = map[string]int
+// arr := []string{}
+// for k, v := range m {
+// 	arr = append(arr, k, v)
+// }
