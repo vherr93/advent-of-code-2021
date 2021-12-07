@@ -51,22 +51,7 @@ func intMatrix(path string) ([][]int, error) {
 	return mat, scanner.Err()
 }
 
-// func getCommon(mat [][]int, i int) int {
-
-// 	var tmp []int
-// 	// for each bit slice
-// 	for _, v := range mat[i] {
-// 		// append val at i position to tmp
-// 		tmp = append(tmp, v)
-
-// 		fmt.Println(tmp)
-// 		fmt.Println(len(tmp))
-// 		i++
-// 	}
-// 	return i
-// }
-
-func getCommon(mat [][]int, i int) int {
+func getCommonBit(mat [][]int, i int) int {
 	sum := 0
 	for _, v := range mat {
 		sum += v[i]
@@ -74,12 +59,32 @@ func getCommon(mat [][]int, i int) int {
 	avg := float64(sum) / float64(len(mat))
 	b := int(math.Round(avg))
 
-	// create new slice where v[i] = b
-	// return this slice
-
-	fmt.Println(b)
 	return b
 
+}
+
+func getCommonBitLine(mat [][]int, i int, d bool) [][]int {
+
+	l := [][]int{}
+	var b int
+
+	if d {
+		b = getCommonBit(mat, i)
+	} else {
+		b = int(math.Abs(float64(getCommonBit(mat, i) - 1)))
+	}
+
+	for _, v := range mat {
+		if b == v[i] {
+			l = append(l, v)
+		}
+	}
+
+	if len(l) > 1 {
+		l = getCommonBitLine(l, i+1, d)
+	}
+
+	return l
 }
 
 func getString(sli []int) string {
@@ -99,41 +104,39 @@ func productint64(g, e int64) int64 {
 	return final
 }
 
-// func binToDec {
+func binToDec(s []int) int64 {
+	d, err := strconv.ParseInt((getString(s)), 2, 64)
+	check(err)
 
-// }
+	return d
+
+}
 
 func main() {
 	bits, err := intMatrix("input.txt")
 	check(err)
 
 	in := len(bits[0])
-
-	// binary seq of most common val in index of slices in bits arr
 	g := make([]int, in)
-	// least common bit
 	e := make([]int, in)
-	// calculate decimal of g & e
 
 	for i := 0; i < in; i++ {
-		g[i] += getCommon(bits, i)
-		// returns parsed 2d slice, pass this now instead
-		e[i] += int(math.Abs(float64(getCommon(bits, i) - 1)))
+		g[i] += getCommonBit(bits, i)
+		e[i] += int(math.Abs(float64(getCommonBit(bits, i) - 1)))
 	}
 
-	// at this point we want 2 row numbers
-
-	fmt.Println(g)
-	fmt.Println(e)
-
-	gr, err := strconv.ParseInt((getString(g)), 2, 64)
-	check(err)
-	er, err := strconv.ParseInt((getString(e)), 2, 64)
-	check(err)
-	//fmt.Println(gr)
-	//fmt.Println(er)
+	gr := binToDec(g)
+	er := binToDec(e)
 
 	con := productint64(gr, er)
 	fmt.Println("Power consumption:", con)
+
+	og := getCommonBitLine(bits, 0, true)
+	cs := getCommonBitLine(bits, 0, false)
+
+	ogr := binToDec(og[0])
+	csr := binToDec(cs[0])
+
+	fmt.Println("Life Support:", productint64(ogr, csr))
 
 }
